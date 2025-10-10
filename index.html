@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventory Management with Barcode Scanner</title>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.5.0/backbone-min.js"></script>
+
+  <!-- Styles -->
+ <style>
+  body {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+  padding: 30px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.controls {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#barcode-input {
+  width: 240px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#scanner-status {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background: #007bff;
+  color: white;
+}
+
+ </style>
+</head>
+<body>
+  <h1>Inventory Management</h1>
+
+  <div class="controls">
+    <input type="text" id="barcode-input" placeholder="Scan or type barcode..." />
+    <button id="btn-start">Start Scanner</button>
+    <button id="btn-stop">Stop Scanner</button>
+    <button id="btn-reset">Reset Inventory</button>
+    <span id="scanner-status" style="color:red;">Scanner: OFF</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Barcode</th>
+        <th>Name</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody id="inventory-body">
+      <tr><td colspan="3">No products</td></tr>
+    </tbody>
+  </table>
+
+  <script src="app.js"></script>
+</body>
+</html>
