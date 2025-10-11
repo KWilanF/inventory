@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventory Management with Barcode Scanner</title>
 
   <!-- Libraries -->
@@ -10,90 +11,247 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.5.0/backbone-min.js"></script>
 
   <!-- Styles -->
- <style>
-  body {
-  font-family: Arial, sans-serif;
-  background: #f8f9fa;
-  padding: 30px;
-}
-
-h1 {
-  text-align: center;
+  <style>
+    /* ----------------------------- */
+/*        Base Layout            */
+/* ----------------------------- */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, #eef3f9, #dbe3ec);
   color: #333;
 }
 
-.controls {
+.app-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 30px;
+  animation: fadeIn 0.8s ease;
+}
+
+/* ----------------------------- */
+/*        Header Section         */
+/* ----------------------------- */
+header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #007bff;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ----------------------------- */
+/*        Scanner Controls       */
+/* ----------------------------- */
+.scanner-controls {
+  text-align: center;
+  margin-bottom: 25px;
 }
 
 #barcode-input {
-  width: 240px;
-  padding: 8px;
+  width: 80%;
+  max-width: 400px;
+  padding: 12px;
   font-size: 16px;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
-button {
-  padding: 10px 20px;
-  margin: 5px;
+#barcode-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.3);
+}
+
+/* ----------------------------- */
+/*        Buttons                */
+/* ----------------------------- */
+.buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
   border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 15px;
   cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  color: #fff;
 }
 
-button:hover {
+.btn.primary {
+  background-color: #007bff;
+}
+
+.btn.primary:hover {
   background-color: #0056b3;
+  transform: translateY(-2px);
 }
 
-#scanner-status {
-  margin-left: 10px;
+.btn.danger {
+  background-color: #dc3545;
+}
+
+.btn.danger:hover {
+  background-color: #a71d2a;
+  transform: translateY(-2px);
+}
+
+.btn.neutral {
+  background-color: #6c757d;
+}
+
+.btn.neutral:hover {
+  background-color: #495057;
+  transform: translateY(-2px);
+}
+
+/* ----------------------------- */
+/*        Status Indicator       */
+/* ----------------------------- */
+.status {
+  margin-top: 10px;
   font-weight: bold;
+}
+
+.status.on {
+  color: green;
+}
+
+.status.off {
+  color: red;
+}
+
+/* ----------------------------- */
+/*        Inventory Table        */
+/* ----------------------------- */
+.inventory-section {
+  margin-top: 30px;
+}
+
+.inventory-section h2 {
+  text-align: center;
+  color: #444;
+  margin-bottom: 10px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
+  padding: 14px;
   text-align: center;
+  font-size: 15px;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 th {
-  background: #007bff;
+  background-color: #007bff;
   color: white;
+  letter-spacing: 0.5px;
 }
 
- </style>
+tr:hover td {
+  background-color: #f8f9fa;
+  transition: background 0.3s ease;
+}
+
+.empty {
+  color: #888;
+}
+
+/* ----------------------------- */
+/*        Footer                 */
+/* ----------------------------- */
+footer {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ----------------------------- */
+/*        Animations             */
+/* ----------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------- */
+/*        Responsive             */
+/* ----------------------------- */
+@media (max-width: 600px) {
+  #barcode-input {
+    width: 100%;
+  }
+  .buttons {
+    flex-direction: column;
+  }
+}
+
+  </style>
 </head>
+
 <body>
-  <h1>Inventory Management</h1>
+  <div class="app-container">
+    <header>
+      <h1>📦 Inventory Manager</h1>
+      <p class="subtitle">Scan items, track quantities, and manage inventory easily.</p>
+    </header>
 
-  <div class="controls">
-    <input type="text" id="barcode-input" placeholder="Scan or type barcode..." />
-    <button id="btn-start">Start Scanner</button>
-    <button id="btn-stop">Stop Scanner</button>
-    <button id="btn-reset">Reset Inventory</button>
-    <span id="scanner-status" style="color:red;">Scanner: OFF</span>
+    <section class="scanner-controls">
+      <input type="text" id="barcode-input" placeholder="🔍 Scan or enter barcode..." autofocus />
+      <div class="buttons">
+        <button id="btn-start" class="btn primary">Start Scanner</button>
+        <button id="btn-stop" class="btn danger">Stop Scanner</button>
+        <button id="btn-reset" class="btn neutral">Reset Inventory</button>
+      </div>
+      <p id="scanner-status" class="status off">🔴 Scanner: OFF</p>
+    </section>
+
+    <section class="inventory-section">
+      <h2>📋 Product Inventory</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Barcode</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-body">
+          <tr><td colspan="3" class="empty">No products found</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p>Made with KENT WILAN C. FEGARIDO using Backbone.js © 2025 </p>
+    </footer>
   </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Barcode</th>
-        <th>Name</th>
-        <th>Quantity</th>
-      </tr>
-    </thead>
-    <tbody id="inventory-body">
-      <tr><td colspan="3">No products</td></tr>
-    </tbody>
-  </table>
 
   <script src="app.js"></script>
 </body>
