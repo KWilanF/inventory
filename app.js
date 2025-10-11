@@ -1,27 +1,24 @@
-// ===== MODEL =====
+// ===================== MODEL =====================
 const Product = Backbone.Model.extend({
   defaults: {
     barcode: "",
     name: "",
-    quantity: 0
-  }
+    quantity: 0,
+  },
 });
 
-// ===== COLLECTION =====
+// ===================== COLLECTION =====================
 const ProductCollection = Backbone.Collection.extend({
   model: Product,
 
-  // Sort by quantity (descending)
   comparator(modelA, modelB) {
     return modelB.get("quantity") - modelA.get("quantity");
   },
 
-  // Find by barcode
   findByBarcode(barcode) {
     return this.findWhere({ barcode });
   },
 
-  // LocalStorage helpers (optional)
   saveToLocal() {
     localStorage.setItem("inventoryData", JSON.stringify(this.toJSON()));
   },
@@ -33,18 +30,18 @@ const ProductCollection = Backbone.Collection.extend({
 
   clearLocal() {
     localStorage.removeItem("inventoryData");
-  }
+  },
 });
 
-// ===== VIEW =====
+// ===================== VIEW =====================
 const InventoryView = Backbone.View.extend({
-  el: "body",
+  el: ".app-container",
 
   events: {
     "click #btn-start": "startScanner",
     "click #btn-stop": "stopScanner",
     "click #btn-reset": "resetInventory",
-    "keydown #barcode-input": "handleEnter"
+    "keypress #barcode-input": "handleBarcodeEntry",
   },
 
   initialize() {
@@ -53,16 +50,20 @@ const InventoryView = Backbone.View.extend({
     this.tableBody = this.$("#inventory-body");
     this.scannerActive = false;
 
-    // Example product database
+    // Example database (mock)
     this.productDatabase = [
       { barcode: "11111", name: "Guitar Strings" },
       { barcode: "22222", name: "Guitar Pick" },
       { barcode: "33333", name: "Capo" },
       { barcode: "44444", name: "Guitar Strap" },
       { barcode: "55555", name: "Guitar Tuner" },
-      { barcode: "66666", name: "Guitar Book" }
+      { barcode: "66666", name: "Guitar Book" },
     ];
 
+    // Load local data
+    this.collection.loadFromLocal();
+
+    this.listenTo(this.collection, "update change reset", this.render);
     this.render();
   },
 
@@ -70,75 +71,120 @@ const InventoryView = Backbone.View.extend({
     this.tableBody.empty();
 
     if (this.collection.length === 0) {
-      this.tableBody.append("<tr><td colspan='3'>No products</td></tr>");
+      this.tableBody.append(
+        `<tr><td colspan="3" class="empty">No products found</td></tr>`
+      );
       return this;
     }
 
     this.collection.each((product) => {
-      const row = $("<tr></tr>");
-      row.append(`<td>${product.get("barcode")}</td>`);
-      row.append(`<td>${product.get("name")}</td>`);
-      row.append(`<td>${product.get("quantity")}</td>`);
+      const row = $(`
+        <tr>
+          <td>${product.get("barcode")}</td>
+          <td>${product.get("name")}</td>
+          <td>${product.get("quantity")}</td>
+        </tr>
+      `);
       this.tableBody.append(row);
     });
 
     return this;
   },
 
+  // ---------- Scanner Controls ----------
   startScanner() {
     this.scannerActive = true;
-    this.status.text("Scanner: ON").css("color", "green");
+    this.status.text("🟢 Scanner: ON").removeClass("off").addClass("on");
     this.input.focus();
+    this.flashMessage("Scanner started!");
   },
 
   stopScanner() {
     this.scannerActive = false;
-    this.status.text("Scanner: OFF").css("color", "red");
+    this.status.text("🔴 Scanner: OFF").removeClass("on").addClass("off");
+    this.flashMessage("Scanner stopped!");
   },
 
-  handleEnter(e) {
-    if (!this.scannerActive) return;
+  resetInventory() {
+    if (confirm("Are you sure you want to reset the entire inventory?")) {
+      this.collection.reset([]);
+      this.collection.clearLocal();
+      this.flashMessage("Inventory cleared!");
+    }
+  },
 
-    if (e.key === "Enter" || e.keyCode === 13) {
+  // ---------- Barcode Entry ----------
+  handleBarcodeEntry(e) {
+    if (!this.scannerActive) return;
+    if (e.key === "Enter") {
       e.preventDefault();
       const barcode = this.input.val().trim();
       if (!barcode) return;
 
-      const productInfo = this.productDatabase.find(p => p.barcode === barcode);
+      const productInfo = this.productDatabase.find(
+        (p) => p.barcode === barcode
+      );
 
       if (!productInfo) {
-        alert("Product not found in database!");
+        this.flashMessage("⚠️ Product not found in database!", true);
         this.input.val("");
         return;
       }
 
       const existing = this.collection.findByBarcode(barcode);
-
       if (existing) {
         existing.set("quantity", existing.get("quantity") + 1);
+        this.flashMessage(`✅ Updated ${existing.get("name")} quantity`);
       } else {
         this.collection.add({
           barcode: productInfo.barcode,
           name: productInfo.name,
-          quantity: 1
+          quantity: 1,
         });
+        this.flashMessage(`🆕 Added ${productInfo.name}`);
       }
 
       this.collection.sort();
+      this.collection.saveToLocal();
       this.input.val("");
-      this.render();
     }
   },
 
-  resetInventory() {
-    if (confirm("Reset full inventory list?")) {
-      this.collection.reset([]);
-      this.collection.clearLocal();
-      this.render();
-    }
-  }
+  // ---------- Toast Notifications ----------
+  flashMessage(msg, isError = false) {
+    const toast = $("<div class='toast'></div>").text(msg);
+    if (isError) toast.css("background", "#dc3545");
+    $("body").append(toast);
+    setTimeout(() => toast.addClass("show"), 100);
+    setTimeout(() => toast.remove(), 2500);
+  },
 });
 
-// ===== INITIALIZATION =====
+// ---------- Add Toast CSS ----------
+$("<style>")
+  .prop("type", "text/css")
+  .html(`
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  opacity: 0;
+  font-size: 14px;
+  transition: all 0.4s ease;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+  bottom: 50px;
+}
+`)
+  .appendTo("head");
+
+// ===================== INITIALIZATION =====================
 const products = new ProductCollection([]);
 new InventoryView({ collection: products });
