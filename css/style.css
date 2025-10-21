@@ -1,0 +1,24 @@
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:#f7f7f8;color:#222}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 1rem;background:#fff;border-bottom:1px solid #e1e1e1}
+.brand{margin:0;font-size:1.1rem;color:#007bff}
+.topbar nav a{margin-left:0.75rem;text-decoration:none;color:#333}
+.container{max-width:980px;margin:1rem auto;padding:1rem;background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.toolbar{display:flex;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
+.btn{padding:0.4rem 0.7rem;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer}
+.btn.primary{background:#0b74de;color:#fff;border-color:#0b74de}
+.btn.small{padding:0.25rem 0.4rem;font-size:0.85rem}
+.btn.tiny{padding:0.2rem 0.4rem;font-size:0.8rem}
+.btn.danger{background:#fff;border-color:#f44336;color:#f44336}
+.list{list-style:none;padding:0;margin:0;display:grid;gap:0.5rem}
+.item{display:flex;justify-content:space-between;align-items:center;padding:0.7rem;border:1px solid #eee;border-radius:6px}
+.meta{display:flex;flex-direction:column}
+.controls{display:flex;gap:0.5rem;align-items:center}
+label{display:block;margin:0.5rem 0}
+input[type="text"],input[type="number"],select{padding:0.4rem;border:1px solid #ddd;border-radius:6px}
+.footer{padding:1rem;text-align:center;color:#666}
+@media (max-width:600px){
+  .toolbar{flex-direction:column;align-items:stretch}
+  .controls{gap:0.3rem}
+}
+.form-message{margin-top:0.5rem;color:#d9534f}

@@ -1,258 +1,180 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventory Management with Barcode Scanner</title>
-
-  <!-- Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.5.0/backbone-min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>📦 Inventory Manager</title>
 
   <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Basic mobile-friendly styling fallback -->
   <style>
-    /* ----------------------------- */
-/*        Base Layout            */
-/* ----------------------------- */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-  background: linear-gradient(180deg, #eef3f9, #dbe3ec);
-  color: #333;
-}
-
-.app-container {
-  max-width: 900px;
-  margin: 40px auto;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  padding: 30px;
-  animation: fadeIn 0.8s ease;
-}
-
-/* ----------------------------- */
-/*        Header Section         */
-/* ----------------------------- */
-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 2rem;
-  color: #007bff;
-}
-
-.subtitle {
-  font-size: 0.95rem;
-  color: #555;
-}
-
-/* ----------------------------- */
-/*        Scanner Controls       */
-/* ----------------------------- */
-.scanner-controls {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-#barcode-input {
-  width: 80%;
-  max-width: 400px;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 30px;
-  border: 1px solid #ccc;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-#barcode-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0,123,255,0.3);
-}
-
-/* ----------------------------- */
-/*        Buttons                */
-/* ----------------------------- */
-.buttons {
-  margin-top: 15px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s;
-  color: #fff;
-}
-
-.btn.primary {
-  background-color: #007bff;
-}
-
-.btn.primary:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-.btn.danger {
-  background-color: #dc3545;
-}
-
-.btn.danger:hover {
-  background-color: #a71d2a;
-  transform: translateY(-2px);
-}
-
-.btn.neutral {
-  background-color: #6c757d;
-}
-
-.btn.neutral:hover {
-  background-color: #495057;
-  transform: translateY(-2px);
-}
-
-/* ----------------------------- */
-/*        Status Indicator       */
-/* ----------------------------- */
-.status {
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-.status.on {
-  color: green;
-}
-
-.status.off {
-  color: red;
-}
-
-/* ----------------------------- */
-/*        Inventory Table        */
-/* ----------------------------- */
-.inventory-section {
-  margin-top: 30px;
-}
-
-.inventory-section h2 {
-  text-align: center;
-  color: #444;
-  margin-bottom: 10px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-th, td {
-  padding: 14px;
-  text-align: center;
-  font-size: 15px;
-  border-bottom: 1px solid #e6e6e6;
-}
-
-th {
-  background-color: #007bff;
-  color: white;
-  letter-spacing: 0.5px;
-}
-
-tr:hover td {
-  background-color: #f8f9fa;
-  transition: background 0.3s ease;
-}
-
-.empty {
-  color: #888;
-}
-
-/* ----------------------------- */
-/*        Footer                 */
-/* ----------------------------- */
-footer {
-  text-align: center;
-  margin-top: 25px;
-  font-size: 14px;
-  color: #555;
-}
-
-/* ----------------------------- */
-/*        Animations             */
-/* ----------------------------- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ----------------------------- */
-/*        Responsive             */
-/* ----------------------------- */
-@media (max-width: 600px) {
-  #barcode-input {
-    width: 100%;
-  }
-  .buttons {
-    flex-direction: column;
-  }
-}
-
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background: #f6f6f6;
+      color: #333;
+    }
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 10px 16px;
+      border-bottom: 1px solid #ddd;
+      flex-wrap: wrap;
+    }
+    .brand {
+      color: #1565c0;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    nav a {
+      color: #333;
+      margin: 0 8px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav a:hover {
+      color: #1565c0;
+    }
+    main {
+      padding: 1rem;
+    }
+    footer.footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .btn {
+      background: #1565c0;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+    .btn:hover {
+      background: #0d47a1;
+    }
+    input, select {
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      flex: 1;
+    }
+    ul.list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    ul.list li {
+      background: #fff;
+      margin-bottom: 8px;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   </style>
 </head>
 
 <body>
-  <div class="app-container">
-    <header>
-      <h1>📦 Inventory Manager</h1>
-      <p class="subtitle">Scan items, track quantities, and manage inventory easily.</p>
+  <div id="app">
+    <header class="topbar">
+      <h1 class="brand">📦 Inventory Manager</h1>
+      <nav>
+        <a href="#/dashboard" data-nav>Dashboard</a>
+        <a href="#/products" data-nav>Products</a>
+        <a href="#/reports" data-nav>Reports</a>
+      </nav>
     </header>
 
-    <section class="scanner-controls">
-      <input type="text" id="barcode-input" placeholder="🔍 Scan or enter barcode..." autofocus />
-      <div class="buttons">
-        <button id="btn-start" class="btn primary">Start Scanner</button>
-        <button id="btn-stop" class="btn danger">Stop Scanner</button>
-        <button id="btn-reset" class="btn neutral">Reset Inventory</button>
-      </div>
-      <p id="scanner-status" class="status off">🔴 Scanner: OFF</p>
-    </section>
+    <main id="main-region"></main>
 
-    <section class="inventory-section">
-      <h2>📋 Product Inventory</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Barcode</th>
-            <th>Product Name</th>
-            <th>Quantity</th>
-          </tr>
-        </thead>
-        <tbody id="inventory-body">
-          <tr><td colspan="3" class="empty">No products found</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <footer>
-      <p>Made with KENT WILAN C. FEGARIDO using Backbone.js © 2025 </p>
+    <footer class="footer">
+      Made with ❤️ by <strong>KENT WILAN C. FEGARIDO</strong> © 2025
     </footer>
   </div>
 
-  <script src="app.js"></script>
+  <!-- ========== Templates ========== -->
+
+  <!-- Product List -->
+  <script type="text/template" id="tmpl-products">
+    <section class="container">
+      <div class="toolbar">
+        <button id="btn-add" class="btn">+ Add Product</button>
+        <input id="search" placeholder="Search products..." />
+        <select id="sort">
+          <option value="name">Sort by name</option>
+          <option value="quantity">Sort by quantity</option>
+        </select>
+        <button id="export" class="btn small">Export CSV</button>
+      </div>
+
+      <ul id="product-list" class="list"></ul>
+      <div id="form-region"></div>
+    </section>
+  </script>
+
+  <!-- Product Item -->
+  <script type="text/template" id="tmpl-product-item">
+    <li class="item">
+      <div class="meta">
+        <strong class="name"><%= name %></strong><br/>
+        <span class="sku">SKU: <%= sku %></span>
+      </div>
+      <div class="controls">
+        <span class="qty">Qty: <%= quantity %></span>
+        <button class="edit btn tiny">Edit</button>
+        <button class="delete btn tiny danger" style="background:#e53935;">Delete</button>
+      </div>
+    </li>
+  </script>
+
+  <!-- Add/Edit Form -->
+  <script type="text/template" id="tmpl-product-form">
+    <form id="product-form" style="background:#fff; padding:10px; border-radius:8px;">
+      <label>
+        Name
+        <input name="name" value="<%= name %>" required />
+      </label>
+      <label>
+        SKU
+        <input name="sku" value="<%= sku %>" required />
+      </label>
+      <label>
+        Quantity
+        <input type="number" name="quantity" value="<%= quantity %>" min="0" required />
+      </label>
+      <div class="form-actions" style="margin-top:10px;">
+        <button type="submit" class="btn primary">Save</button>
+        <button type="button" class="btn cancel" style="background:#888;">Cancel</button>
+      </div>
+    </form>
+  </script>
+
+  <!-- ========== Libraries (CDN Safe) ========== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.5.0/backbone-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.16/backbone.localStorage-min.js"></script>
+
+  <!-- ========== App Files ========== -->
+  <script src="js/models/product.js"></script>
+  <script src="js/collections/products.js"></script>
+  <script src="js/views/productItemView.js"></script>
+  <script src="js/views/productListView.js"></script>
+  <script src="js/views/productFormView.js"></script>
+  <script src="js/routers/router.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
